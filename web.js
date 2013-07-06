@@ -4,13 +4,15 @@ var express = require('express');
 
 var app = express.createServer(express.logger());
 
-var input = fs.readFile('index.html', function (err, data) {
+var input;
+
+fs.readFile('index.html', function (err, data) {
   if (err) throw err;
-  console.log(data);
+  input = data.toString();
 });
 
 app.get('/', function(request, response) {
-  response.send(input.toString());
+  response.send(input);
 });
 
 var port = process.env.PORT || 5000;
