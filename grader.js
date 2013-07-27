@@ -33,9 +33,11 @@ var URLFILE_DEFAULT = "http://fierce-reaches-1073.herokuapp.com";
 
 var assertFileExists = function(infile) {
     var instr = infile.toString();
+    if(checktype(infile)!="url"){
     if(!fs.existsSync(instr)) {
         console.log("%s does not exist. Exiting.", instr);
         process.exit(1); // http://nodejs.org/api/process.html#process_process_exit_code
+    }
     }
     return instr;
 };
@@ -78,7 +80,13 @@ var checkUrl = function(url, checksfile) {
 	});
 };
 
-
+function checktype(entry){
+	if(entry.substring(0,4)=="http"){
+		return "url";
+	}else{
+		return "file";
+	}
+}
 
 
 
@@ -92,15 +100,14 @@ if(require.main == module) {
     program
         .option('-c, --checks <check_file>', 'checks.json', clone(assertFileExists), CHECKSFILE_DEFAULT)
         .option('-f, --file <html_file>', 'index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
-        .option('-u, --url <url_file>', 'http://fierce-reaches-1073.herokuapp.com', clone(assertFileExists), URLFILE_DEFAULT)
-        //.parse(process.argv);
-    	
-    if(program.file){
-        var checkJson = checkHtmlFile(program.file, program.checks);
+        .parse(process.argv);
+
+    if(checktype(program.file)=="url"){
+    	checkUrl(program.file, program.checks);
+    }else{
+    	var checkJson = checkHtmlFile(program.file, program.checks);
         var outJson = JSON.stringify(checkJson, null, 4);
         console.log(outJson);
-    }else{
-    	checkUrl(program.url, program.checks);
     }
     
     
